@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player Using API</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        /* Your existing styles */
+        body {
+            overflow-x: hidden;
+        }
+
+        audio::-webkit-media-controls-play-button {
+            background-color: rgb(197, 197, 199);
+            border-radius: 20px;
+        }
+
+        .audio {
+            width: 100%;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+        }
+
+        .navbar {
+            background-color: #e9e9e9;
+            box-shadow: 7px 4px 11px 8px #d7d7d7;
+            padding: 15px 0;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .navbar a {
+            color: #025cff;
+        }
+
+        @media screen and (max-width:768px) {
+            .navbar {
+                display: grid;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm">
+        <!-- Brand -->
+        <a class="navbar-brand" href="#">Music Player</a>
+
+        <!-- Links -->
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Listen Song</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Find songs</a>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-md-12 offset-md-3">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search for songs...">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button" onclick="searchSongs()">Search</button>
+                    </div>
+                </div>
+            </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div id="player_main" class="row d-flex gap-5 justify-content-center pt-3" style="gap:20px;">
+        </div>
+    </div>
+
+    <script>
+        let allSongs;
+
+        fetch("songs.json")
+            .then(response => response.json())
+            .then(data => {
+                allSongs = data;
+                displaySongs(data);
+            });
+
+        function displaySongs(songs) {
+            let musicdata = "";
+            songs.map(song => {
+                musicdata += `<div class="card" style="width: 19.5rem;">
+                <div class="card-body">
+                    <div class="card-img-top img-fluid">
+                        <img src="${song.coverpic}" alt="Song cover pic" style="width:100%;border-radius: 10px; padding-bottom: 15px;">
+                    </div>
+                    <div class="card-title">
+                        <h3>${song.title}</h3>
+                    </div>
+                    <div class="card-title">
+                        <p class="card-text">${song.artist}</p>
+                    </div>
+                    <div class="card-text">
+                        <audio src="${song.url}" controls class="w-100 "></audio>
+                    </div>
+                </div>
+            </div>`;
+            });
+            document.getElementById("player_main").innerHTML = musicdata;
+        }
+
+        function searchSongs() {
+            const searchInput = document.getElementById("searchInput").value.toLowerCase();
+            const filteredSongs = allSongs.filter(song =>
+                song.title.toLowerCase().includes(searchInput) ||
+                song.artist.toLowerCase().includes(searchInput)
+            );
+            displaySongs(filteredSongs);
+        }
+    </script>
+
+</body>
+
+</html>
